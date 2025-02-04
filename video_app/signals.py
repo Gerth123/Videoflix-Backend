@@ -2,11 +2,13 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, post_init
 from .models import Video
 import os
+from .tasks import convert_480p
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
     if created:
         print("Video created")
+        convert_480p(instance.video_file.path)
 
 
 @receiver(post_delete, sender=Video)
