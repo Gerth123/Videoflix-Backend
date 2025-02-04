@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import generics
 from users_app.models import UserProfile
 from .serializers import *
@@ -7,6 +8,19 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import status
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from django.views.decorators.cache import cache_page
+from django.shortcuts import render
+from video_app.models import Video
+
+
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
+
+#Backend Modul 10 - Video 09 Redis Caching. Daten vorlade, bzw im Arbeitsspeicher belassen.
+@cache_page(CACHE_TTL)
+def index(request):
+    videos = Video.objects.all()
+    return render(request, 'index.html', {'videos': videos})    
 
 class UserProfileList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]

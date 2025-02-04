@@ -30,6 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CACHE_TTL = 60 * 15
 
 # Application definition
 
@@ -44,9 +45,11 @@ INSTALLED_APPS = [
     'video_app.apps.VideoAppConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,11 +59,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
+            "PASSWORD": "foobared",
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
         "KEY_PREFIX": "videoflix",
