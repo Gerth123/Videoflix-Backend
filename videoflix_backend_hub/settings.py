@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'debug_toolbar',
+    'django_rq',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+RQ_QUEUES = {
+    'default': {
+        'HOST': '172.26.3.154',  # WSL-IP statt localhost
+        # 'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        # 'PASSWORD': 'foobared',
+        # 'URL': 'redis://:foobared@localhost:6379/0',
+        'DEFAULT_TIMEOUT': 360,
+    },
+}
+
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
@@ -71,7 +84,7 @@ CACHES = {
             "PASSWORD": "foobared",
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
-        "KEY_PREFIX": "videoflix",
+        "KEY_PREFIX": "videoflix_backend_hub",
     }
 }
 

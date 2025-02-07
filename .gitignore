@@ -1,2 +1,21 @@
 db.sqlite3
 db.sqlite3-journal
+
+#pyenv
+.python-version
+
+#celery
+celerybeat-schedule.*
+
+# SageMath parsed files
+*.sage.py
+
+#Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+env_lin/
