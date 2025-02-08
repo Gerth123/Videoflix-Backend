@@ -19,3 +19,12 @@ ENV/
 env.bak/
 venv.bak/
 env_lin/
+
+#Static files
+static/
+media/
+
+#Django	
+*.pyc
+*.pyo
+*.py.class
