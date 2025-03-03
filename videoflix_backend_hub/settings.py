@@ -65,14 +65,21 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# RQ_QUEUES = {
+#     'default': {
+#         'HOST': '172.26.3.154',  # WSL-IP statt localhost
+#         # 'HOST': 'localhost',
+#         'PORT': 6379,
+#         'DB': 0,
+#         # 'PASSWORD': 'foobared',
+#         'URL': 'redis://:foobared@localhost:6379/0',
+#         'DEFAULT_TIMEOUT': 360,
+#     },
+# }
+
 RQ_QUEUES = {
     'default': {
-        'HOST': '172.26.3.154',  # WSL-IP statt localhost
-        # 'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
-        # 'PASSWORD': 'foobared',
-        # 'URL': 'redis://:foobared@localhost:6379/0',
+        'URL': 'redis://172.26.3.154:6379/0',
         'DEFAULT_TIMEOUT': 360,
     },
 }
@@ -86,7 +93,7 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
-            "PASSWORD": "foobared",
+            # "PASSWORD": "foobared",
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
         "KEY_PREFIX": "videoflix_backend_hub",
