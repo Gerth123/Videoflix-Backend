@@ -79,10 +79,21 @@ MIDDLEWARE = [
 
 RQ_QUEUES = {
     'default': {
-        'URL': 'redis://172.26.3.154:6379/0',
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        # 'PASSWORD': 'foobared',
+        # 'URL': 'redis://:foobared@localhost:6379/0',
         'DEFAULT_TIMEOUT': 360,
     },
 }
+
+# RQ_QUEUES = {
+#     'default': {
+#         'URL': 'redis://172.26.3.154:6379/0',
+#         'DEFAULT_TIMEOUT': 360,
+#     },
+# }
 
 INTERNAL_IPS = [
     '127.0.0.1',

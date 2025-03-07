@@ -28,19 +28,14 @@ def set_converted_video(video_id, convert_function, field_name, **kwargs):
 #         queue.enqueue(set_converted_video, instance.id, convert_480p, "video_480p")
 #         queue.enqueue(set_converted_video, instance.id, convert_720p, "video_720p")
 #         queue.enqueue(set_converted_video, instance.id, convert_1080p, "video_1080p")
-#         convert_144p(instance.video_file.path)
-#         convert_240p(instance.video_file.path)
-#         convert_360p(instance.video_file.path)
 #         convert_480p(instance.video_file.path)
-#         convert_720p(instance.video_file.path)
-#         convert_1080p(instance.video_file.path)
+
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
     if created:
         print("Video created")
         queue = django_rq.get_queue('default', autocommit=True)
-        print(instance.video_file.path)
         queue.enqueue(convert_480p, instance.video_file.path)
         # convert_480p(instance.video_file.path)
 
