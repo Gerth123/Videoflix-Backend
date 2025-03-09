@@ -2,7 +2,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete, post_init
 from .models import Video
 import os
-from .tasks import convert_144p, convert_240p, convert_360p, convert_480p, convert_720p, convert_1080p
+from .tasks import *
 import django_rq
 from django.db import transaction
 from .models import Video
@@ -36,7 +36,14 @@ def video_post_save(sender, instance, created, **kwargs):
     if created:
         print("Video created")
         queue = django_rq.get_queue('default', autocommit=True)
+        queue.enqueue(convert_144p, instance.video_file.path)
+        queue.enqueue(convert_240p, instance.video_file.path)
+        queue.enqueue(convert_360p, instance.video_file.path)
         queue.enqueue(convert_480p, instance.video_file.path)
+        queue.enqueue(convert_720p, instance.video_file.path)
+        queue.enqueue(convert_1080p, instance.video_file.path)
+        queue.enqueue(convert_1440p, instance.video_file.path)
+        queue.enqueue(convert_2160p, instance.video_file.path)
         # convert_480p(instance.video_file.path)
 
 
