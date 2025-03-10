@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
+    # username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
 
     class Meta:
@@ -27,13 +27,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
+    # username = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['email', 'password']
 
     def save(self):
         '''
@@ -49,7 +49,7 @@ class RegistrationSerializer(serializers.Serializer):
         '''
         password = self.validated_data['password']
         user = User(
-            username=self.validated_data['username'],
+            # username=self.validated_data['username'],
             email=self.validated_data['email']
         )
         user.set_password(password)
@@ -75,11 +75,11 @@ class EmailAuthTokenSerializer(serializers.Serializer):
         if email and password:
             try:
                 user = User.objects.get(email=email)
-                username = user.username
+                # username = user.username
             except User.DoesNotExist:
                 raise serializers.ValidationError(
                     "Benutzer mit dieser E-Mail existiert nicht.")
-            user = authenticate(username=username, password=password)
+            user = authenticate(email=email, password=password)
             if not user:
                 raise serializers.ValidationError("Ungültige Anmeldedaten.")
         else:

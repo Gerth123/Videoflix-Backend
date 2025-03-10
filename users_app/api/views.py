@@ -42,7 +42,7 @@ class RegistrationView(APIView):
             token, created = Token.objects.get_or_create(user=saved_account)
             data = {
                 'token': token.key,
-                'username': saved_account.username,
+                # 'username': saved_account.username,
                 'email': saved_account.email,
             }
         else:
@@ -62,7 +62,7 @@ class CustomLoginView(ObtainAuthToken):
                 user = token_obj.user
                 return Response({
                     'token': token_obj.key,
-                    'username': user.username,
+                    # 'username': user.username,
                     'email': user.email,
                     'user_id': user.id
                 })
@@ -76,7 +76,7 @@ class CustomLoginView(ObtainAuthToken):
             token, created = Token.objects.get_or_create(user=user)
             return Response({
                 'token': token.key,
-                'username': user.username,
+                # 'username': user.username,
                 'email': user.email,
                 'user_id': user.id
             })

@@ -14,9 +14,9 @@ class UserProfile(models.Model):
 
     def __str__(self):
         '''
-        Return the username of the user.
+        Return the email of the user.
         '''
-        return self.user.username
+        return self.user.email
 
     def save(self, *args, **kwargs):
         '''
@@ -27,7 +27,7 @@ class UserProfile(models.Model):
             self.user.save()
         
         if not self.slug:
-            self.slug = slugify(self.user.username)
+            self.slug = slugify(self.user.email)
 
         super(UserProfile, self).save(*args, **kwargs)
 
