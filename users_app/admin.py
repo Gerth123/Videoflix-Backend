@@ -3,7 +3,7 @@ from .models import UserProfile
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):  
-    list_display = ("user", "phone", "slug", "get_is_staff", "get_is_superuser")  
+    list_display = ("user", "slug", "get_is_staff", "get_is_superuser")  
     search_fields = ("user__username", "phone")  
     list_filter = ("user__is_staff", "user__is_superuser")  
     autocomplete_fields = ("user",)  
@@ -11,7 +11,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("Benutzer-Informationen", {
-            "fields": ("user", "phone", "slug")
+            "fields": ("user", "slug")
         }),
     )
 
