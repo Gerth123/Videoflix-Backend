@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Confirm your email</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; text-align: left; padding: 20px; background-color: #f9f9f9;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+      <img src="{{ site_url }}{% static 'assets/icons/logo.svg' %}" alt="Videoflix Logo" style="display: block; margin: auto; width: 150px;" />
+      <p>
+        Dear <strong>{{ user_name }}</strong>,
+      </p>
+      <p>
+        Thank you for registering with <strong>Videoflix</strong>. To complete your registration and verify your email address, please click the link below:
+      </p>
+      <a href="{{ activation_url }}" target="_blank"><img src="{{ site_url }}{% static 'assets/icons/activate_account.svg' %}" alt="Videoflix Logo" style="display: block; margin: auto; width: 150px;" /></a>
+      <p>
+        Best regards,<br />Your Videoflix Team
+      </p>
+    </div>
+  </body>
+</html>

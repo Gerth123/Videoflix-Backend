@@ -32,6 +32,14 @@ ALLOWED_HOSTS = []
 
 CACHE_TTL = 60 * 15
 
+STATIC_URL = '/static/'
+SITE_URL = "http://127.0.0.1:8000"  
+FRONTEND_URL = "http://localhost:4200"
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
 # Application definition
 
 INSTALLED_APPS = [
