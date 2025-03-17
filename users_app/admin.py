@@ -1,9 +1,21 @@
 from django.contrib import admin
 from .models import UserProfile
+from rest_framework.authtoken.models import Token
+
+# @admin.register(UserProfile)
+# class UserProfileAdmin(admin.ModelAdmin):
+#     list_display = ("user", "slug", "get_is_staff", "get_is_superuser", "get_token", "email_sent")
+    
+#     def get_token(self, obj):
+#         token = Token.objects.filter(user=obj.user).first()
+#         return token.key if token else "Kein Token"
+
+#     get_token.short_description = "API Token"
+
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):  
-    list_display = ("user", "slug", "get_is_staff", "get_is_superuser")  
+    list_display = ("user", "slug", "get_is_staff", "get_is_superuser", "get_token", "email_sent")  
     search_field = ("user__email",)  
     list_filter = ("user__is_staff", "user__is_superuser")  
     autocomplete_fields = ("user",)  
@@ -14,6 +26,12 @@ class UserProfileAdmin(admin.ModelAdmin):
             "fields": ("user", "slug")
         }),
     )
+
+    def get_token(self, obj):
+        token = Token.objects.filter(user=obj.user).first()
+        return token.key if token else "Kein Token"
+
+    get_token.short_description = "API Token"
 
     # Diese Methoden greifen auf das verknüpfte User-Modell zu
     def get_is_staff(self, obj):
