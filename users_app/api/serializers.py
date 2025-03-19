@@ -75,7 +75,6 @@ class EmailAuthTokenSerializer(serializers.Serializer):
         if email and password:
             try:
                 user = User.objects.get(email=email)
-                # username = user.username
             except User.DoesNotExist:
                 raise serializers.ValidationError(
                     "Benutzer mit dieser E-Mail existiert nicht.")

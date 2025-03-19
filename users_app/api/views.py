@@ -106,12 +106,19 @@ def get_unique_username(email):
     return username
 
 
-class CustomLoginView(ObtainAuthToken):
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class CustomLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         token = request.data.get('token')
 
+        # Wenn ein Token übergeben wird, versuche den Benutzer damit zu authentifizieren
         if token:
             try:
                 token_obj = Token.objects.get(key=token)
@@ -119,22 +126,37 @@ class CustomLoginView(ObtainAuthToken):
                 return Response({
                     'token': token_obj.key,
                     'email': user.email,
-                    'user_id': user.id
+                    'user_id': user.id,
+                    'is_active': user.is_active
                 })
             except Token.DoesNotExist:
                 return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = EmailAuthTokenSerializer(data=request.data)
+        # Wenn kein Token übergeben wird, versuche den Login mit E-Mail und Passwort
+        email = request.data.get('email')
+        password = request.data.get('password')
 
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({
-                'token': token.key,
-                'email': user.email,
-                'user_id': user.id
-            })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if email and password:
+            print("E-Mail:", email, "Passwort:", password)
+            try:
+                # Hole den Benutzer basierend auf der E-Mail
+                user = User.objects.get(email=email)
+                # Überprüfe das Passwort
+                if user.check_password(password):
+                    token, created = Token.objects.get_or_create(user=user)
+                    return Response({
+                        'token': token.key,
+                        'email': user.email,
+                        'user_id': user.id,
+                        'is_active': user.is_active
+                    })
+                else:
+                    return Response({'error': 'Invalid email or password'}, status=status.HTTP_400_BAD_REQUEST)
+            except User.DoesNotExist:
+                return Response({'error': 'Invalid email or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error': 'No token or email/password provided'}, status=status.HTTP_400_BAD_REQUEST)
+
     
 class ActivateAccountView(APIView):
     permission_classes = [AllowAny]
