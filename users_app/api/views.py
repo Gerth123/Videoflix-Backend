@@ -116,10 +116,9 @@ class CustomLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        token = request.data.get('token')
-
-        # Wenn ein Token übergeben wird, versuche den Benutzer damit zu authentifizieren
+        token = request.headers.get('Authorization')
         if token:
+            token = token.split(' ')[1]
             try:
                 token_obj = Token.objects.get(key=token)
                 user = token_obj.user
@@ -132,16 +131,12 @@ class CustomLoginView(APIView):
             except Token.DoesNotExist:
                 return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Wenn kein Token übergeben wird, versuche den Login mit E-Mail und Passwort
         email = request.data.get('email')
         password = request.data.get('password')
 
         if email and password:
-            print("E-Mail:", email, "Passwort:", password)
             try:
-                # Hole den Benutzer basierend auf der E-Mail
                 user = User.objects.get(email=email)
-                # Überprüfe das Passwort
                 if user.check_password(password):
                     token, created = Token.objects.get_or_create(user=user)
                     return Response({
