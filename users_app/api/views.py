@@ -21,6 +21,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
+from django.core.cache import cache
+from django.utils.crypto import get_random_string
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 
 
@@ -105,13 +108,6 @@ def get_unique_username(email):
         counter += 1
     return username
 
-
-from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
 class CustomLoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -172,4 +168,48 @@ class ActivateAccountView(APIView):
             return redirect(f"{settings.FRONTEND_URL}/account-confirmed/")
         else:
             return redirect(f"{settings.FRONTEND_URL}/activation-failed/")
+        
+class PasswordResetRequestView(APIView):
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            user = User.objects.filter(email=email).first()
+
+            if user:
+                token = get_random_string(50)  
+                cache.set(f"password_reset_{token}", user.id, timeout=3600)  
+                reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+
+                send_mail(
+                    "Passwort zurücksetzen",
+                    f"Klicke hier, um dein Passwort zurückzusetzen: {reset_url}",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
+
+            return Response({"message": "Falls die E-Mail existiert, wurde eine Nachricht gesendet."})
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordResetConfirmView(APIView):
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            token = serializer.validated_data['token']
+            new_password = serializer.validated_data['password']
+            
+            user_id = cache.get(f"password_reset_{token}")
+            if not user_id:
+                return Response({"error": "Token ist ungültig oder abgelaufen."}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = get_object_or_404(User, id=user_id)
+            user.set_password(new_password)
+            user.save()
+            cache.delete(f"password_reset_{token}")
+
+            return Response({"message": "Passwort erfolgreich geändert."})
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
