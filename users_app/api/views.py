@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.html import format_html
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
@@ -177,20 +178,45 @@ class PasswordResetRequestView(APIView):
             user = User.objects.filter(email=email).first()
 
             if user:
-                token = get_random_string(50)  
-                cache.set(f"password_reset_{token}", user.id, timeout=3600)  
+                token = get_random_string(50)
+                cache.set(f"password_reset_{token}", user.id, timeout=3600)
                 reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
 
-                send_mail(
-                    "Passwort zurücksetzen",
-                    f"Klicke hier, um dein Passwort zurückzusetzen: {reset_url}",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                    fail_silently=False,
+                subject = "Passwort zurücksetzen"
+                from_email = settings.DEFAULT_FROM_EMAIL
+                to_email = [email]
+
+                text_content = f"Klicke auf den folgenden Link, um dein Passwort zurückzusetzen: {reset_url}"
+                html_content = format_html(
+                    """
+                    <p>Klicke auf den Button unten, um dein Passwort zurückzusetzen:</p>
+                    <br>
+                    <a href="{}" style="
+                        display: inline-block;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        color: white;
+                        background-color: #007bff;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        margin-bottom: 20px;">
+                        Passwort zurücksetzen
+                    </a>
+                    <br>
+                    <p>Falls du diese Anfrage nicht gestellt hast, ignoriere diese E-Mail.</p>
+                    <br>
+                    <p>Vielen Dank, dass du bei Videoflix bist!</p>
+                    <p>Dein Videoflix Team</p>
+                    """,
+                    reset_url
                 )
 
+                email_message = EmailMultiAlternatives(subject, text_content, from_email, to_email)
+                email_message.attach_alternative(html_content, "text/html")
+                email_message.send()
+
             return Response({"message": "Falls die E-Mail existiert, wurde eine Nachricht gesendet."})
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetConfirmView(APIView):
