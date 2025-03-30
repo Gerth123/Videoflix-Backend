@@ -3,6 +3,7 @@ from video_app.models import Video
 from .serializers import VideoSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from .permissions import IsAdminOrReadOnly
 
 class VideoList(generics.ListCreateAPIView):
     queryset = Video.objects.all()
@@ -11,6 +12,7 @@ class VideoList(generics.ListCreateAPIView):
 class VideoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         video = self.get_object()

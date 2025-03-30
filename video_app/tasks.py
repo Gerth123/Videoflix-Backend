@@ -8,84 +8,58 @@ import subprocess
 #     cmd = 'ffmpeg -i "{}" -s hd480 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"' .format(source, target)
 #     run = subprocess.run(cmd, capture_output=True)
 
+import os
+import subprocess
+
+def convert_video(source, resolution, size, folder):
+    """Generische Funktion zur Videokonvertierung."""
+    file_name, ext = os.path.splitext(os.path.basename(source))  # Nur den Dateinamen extrahieren
+    target = f"{file_name}.{resolution}.mp4"  # Ziel-Dateiname mit Auflösung erstellen
+
+    # Ersetze 'originals' durch den gewünschten Zielordner
+    source_linux = source.replace('\\', '/').replace('C:', 'c')  # Windows-Pfad zu WSL-Pfad konvertieren
+    target_dir = os.path.dirname(source_linux).replace('originals', folder)  # Zielordner anpassen
+
+    # Sicherstellen, dass der Zielordner relativ zu MEDIA_ROOT richtig gebildet wird
+    target_linux = os.path.join(target_dir, target)  # Vollständiger Zielpfad mit Dateiname
+
+    os.makedirs(target_dir, exist_ok=True)  # Zielordner erstellen, falls er noch nicht existiert
+
+    # ffmpeg-Befehl zur Konvertierung
+    cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', size, '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
+    run = subprocess.run(cmd, capture_output=True, text=True)  # Befehl ausführen
+
+    if run.returncode == 0:
+        # Rückgabe des richtigen Pfads zur konvertierten Datei, relativ zu MEDIA_URL
+        return target_linux.replace('c:/', '/').replace('C:/', '/').replace('originals', folder)  # Ausgabe im richtigen Format
+    else:
+        return None  # Falls es nicht funktioniert hat
+
+
+    
 def convert_144p(source):
-    file_name, _ = os.path.splitext(source)
-    target = file_name + '.144p.mp4'
-    source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '144p')
-    os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', '256x144', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    run = subprocess.run(cmd, capture_output=True, text=True)
+    return convert_video(source, "144p", "256x144", "144p")
 
 def convert_240p(source):
-    file_name, _ = os.path.splitext(source)
-    target = file_name + '.240p.mp4'
-    source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '240p')
-    os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', '426x240', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    run = subprocess.run(cmd, capture_output=True, text=True)
+    return convert_video(source, "240p", "426x240", "240p")
 
 def convert_360p(source):
-    file_name, _ = os.path.splitext(source)
-    target = file_name + '.360p.mp4'
-    source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '360p')
-    os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', '640x360', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    run = subprocess.run(cmd, capture_output=True, text=True)
+    return convert_video(source, "360p", "640x360", "360p")
 
 def convert_480p(source):
-    file_name, _ = os.path.splitext(source)
-    target = file_name + '.480p.mp4'
-    source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '480p')
-    os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', 'hd480', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    run = subprocess.run(cmd, capture_output=True, text=True)
+    return convert_video(source, "480p", "hd480", "480p")
 
 def convert_720p(source):
-    file_name, _ = os.path.splitext(source)
-    target = file_name + '.720p.mp4'
-    source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '720p')
-    os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', 'hd720', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    run = subprocess.run(cmd, capture_output=True, text=True)
-    
+    return convert_video(source, "720p", "hd720", "720p")
+
 def convert_1080p(source):
-    file_name, _ = os.path.splitext(source)
-    target = file_name + '.1080p.mp4'
-    source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '1080p')
-    os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', 'hd1080', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    run = subprocess.run(cmd, capture_output=True, text=True)
+    return convert_video(source, "1080p", "hd1080", "1080p")
 
 # def convert_1440p(source):
-#     file_name, _ = os.path.splitext(source)
-#     target = file_name + '.1440p.mp4'
-    
-#     source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    
-#     target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '1440p')
-#     os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    
-#     cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', '2560x1440', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    
-#     run = subprocess.run(cmd, capture_output=True, text=True)
+#     return convert_video(source, "1440p", "2560x1440", "1440p")
 
 # def convert_2160p(source):
-#     file_name, _ = os.path.splitext(source)
-#     target = file_name + '.2160p.mp4'
-    
-#     source_linux = "/mnt/" + source.replace('\\', '/').replace('C:', 'c')
-    
-#     target_linux = "/mnt/" + target.replace('\\', '/').replace('C:', 'c').replace('originals', '2160p')
-#     os.makedirs(os.path.dirname(target_linux), exist_ok=True)
-    
-#     cmd = ['wsl.exe', 'ffmpeg', '-i', source_linux, '-s', '3840x2160', '-c:v', 'libx264', '-crf', '23', '-c:a', 'aac', '-strict', '-2', target_linux]
-    
-#     run = subprocess.run(cmd, capture_output=True, text=True)
+#     return convert_video(source, "2160p", "3840x2160", "2160p")
+
 
 
