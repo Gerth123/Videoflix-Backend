@@ -8,11 +8,12 @@ from .permissions import IsAdminOrReadOnly
 class VideoList(generics.ListCreateAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
 
 class VideoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
-    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         video = self.get_object()
