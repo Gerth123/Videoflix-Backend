@@ -4,6 +4,7 @@ from .serializers import VideoSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .permissions import IsAdminOrReadOnly
+from rest_framework.views import APIView    
 
 class VideoList(generics.ListCreateAPIView):
     queryset = Video.objects.all()
@@ -30,3 +31,18 @@ class VideoDetail(generics.RetrieveUpdateDestroyAPIView):
         
         serializer = self.get_serializer(video)
         return Response(serializer.data)
+    
+class VideoThumbnail(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            video = Video.objects.get(pk=pk)
+
+            # Gebe nur das Thumbnail zurück, wenn es vorhanden ist
+            if video.thumbnail:
+                return Response({
+                    "thumbnail_url": video.thumbnail.url
+                }, status=status.HTTP_200_OK)
+            return Response({"error": "Thumbnail nicht verfügbar."}, status=status.HTTP_404_NOT_FOUND)
+
+        except Video.DoesNotExist:
+            return Response({"error": "Video nicht gefunden."}, status=status.HTTP_404_NOT_FOUND)
