@@ -11,8 +11,21 @@ from django.conf import settings
 import time
 from rq import Retry
 import logging
+from django.utils.text import slugify
+
 
 logger = logging.getLogger(__name__)
+
+def get_unique_filename(target_dir, base_name, resolution, ext):
+    """Prüft, ob der Dateiname existiert, und hängt ggf. eine Nummer an."""
+    file_path = os.path.join(target_dir, f"{base_name}.{resolution}{ext}")
+    counter = 1
+
+    while os.path.exists(file_path):
+        file_path = os.path.join(target_dir, f"{base_name}_{counter}.{resolution}{ext}")
+        counter += 1
+
+    return file_path
 
 def set_converted_video(video_id, convert_function, field_name, **kwargs):
     """Wird von RQ-Worker ausgeführt, speichert den konvertierten Videopfad."""
@@ -59,7 +72,6 @@ def wait_for_video(instance_id, max_retries=5, delay=1):
             return instance
         retries += 1
         time.sleep(delay)
-    # Wenn das Video nach der maximalen Anzahl von Versuchen immer noch nicht gefunden wird, loggen wir es
     logger.error(f"Video mit ID {instance_id} konnte nach {max_retries} Versuchen nicht gefunden werden.")
     return None
 
@@ -68,17 +80,23 @@ def process_and_save(instance_id, conversion_func, field_name):
     try:
         instance = wait_for_video(instance_id)
         if not instance:
-            return  # Beende den Job, wenn das Video nicht gefunden wurde
+            return 
 
         instance.refresh_from_db()
         output_path = conversion_func(instance.video_file.path)
 
         if output_path:
-            folder_name = field_name.split('_', 1)[1]
-            target_dir = os.path.join(settings.MEDIA_ROOT, 'videos', folder_name)
+            resolution = field_name.split('_', 1)[1]
+            target_dir = os.path.join(settings.MEDIA_ROOT, 'videos', resolution)
             os.makedirs(target_dir, exist_ok=True)
-            file_name = os.path.basename(output_path)
-            final_output_path = os.path.join(target_dir, file_name)
+
+            base_ext = os.path.splitext(output_path)[1]
+            safe_title = slugify(instance.title)
+
+            final_output_path = get_unique_filename(target_dir, safe_title, resolution, base_ext)
+
+            os.rename(output_path, final_output_path)
+
             relative_path = final_output_path.replace(settings.MEDIA_ROOT, '')
             url = relative_path.lstrip(os.sep)
             setattr(instance, field_name, url)
@@ -95,7 +113,6 @@ def process_and_save(instance_id, conversion_func, field_name):
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
     if created:
-        time.sleep(4)  # Uncomment to add delay if necessary
 
         queue = django_rq.get_queue('default', autocommit=True)
         

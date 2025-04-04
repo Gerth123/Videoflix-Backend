@@ -47,17 +47,16 @@ def convert_video(source, resolution, size, folder):
     if not os.path.exists(source):
         logger.error(f"Videoquelle existiert nicht: {source}")
         return None
-    file_name, ext = os.path.splitext(os.path.basename(source))  # Nur den Dateinamen extrahieren
+    file_name, ext = os.path.splitext(os.path.basename(source))  
     target = f"{file_name}.{resolution}.mp4"
 
     source_linux = source.replace('\\', '/').replace('C:', 'c')
-    target_dir = os.path.dirname(source_linux).replace('originals', folder)  # Zielordner anpassen
+    target_dir = os.path.dirname(source_linux).replace('originals', folder) 
 
     target_linux = os.path.join(target_dir, target)
 
     os.makedirs(target_dir, exist_ok=True)
 
-    # Logge den ffmpeg-Befehl zur Fehlerdiagnose
     logger.info(f"FFmpeg Befehl: wsl.exe ffmpeg -i {source_linux} -s {size} -c:v libx264 -crf 23 -c:a aac -strict -2 -ac 2 -ar 44100 -preset medium {target_linux}")
     
     cmd = [
