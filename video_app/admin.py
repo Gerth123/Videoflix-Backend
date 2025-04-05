@@ -18,7 +18,7 @@ class VideoAdmin(ImportExportModelAdmin):
         if obj:
             fields.append('id')  # Sicherstellen, dass das 'id'-Feld im Bearbeitungsmodus angezeigt wird
         else:
-            fields = ["title", "description", "video_file"]  # Im Erstellmodus nur diese Felder
+            fields = ["title", "description", "video_file", "genre"]  # Im Erstellmodus nur diese Felder
         return fields
 
     def get_readonly_fields(self, request, obj=None):

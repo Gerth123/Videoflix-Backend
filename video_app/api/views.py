@@ -1,6 +1,6 @@
 from rest_framework import generics
 from video_app.models import Video
-from .serializers import VideoSerializer
+from .serializers import VideoSerializer, VideoThumbnailSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .permissions import IsAdminOrReadOnly
@@ -46,3 +46,18 @@ class VideoThumbnail(APIView):
 
         except Video.DoesNotExist:
             return Response({"error": "Video nicht gefunden."}, status=status.HTTP_404_NOT_FOUND)
+        
+class GenreGroupedVideosView(APIView):
+    def get(self, request):
+        genres = Video.objects.values_list('genre', flat=True).distinct()
+        result = []
+
+        for genre in genres:
+            videos = Video.objects.filter(genre=genre)
+            serialized = VideoThumbnailSerializer(videos, many=True)
+            result.append({
+                'name': genre.title(),
+                'movies': [{'thumbnailUrl': vid['thumbnail']} for vid in serialized.data]
+            })
+
+        return Response(result)

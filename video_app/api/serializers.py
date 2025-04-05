@@ -34,3 +34,9 @@ class VideoSerializer(serializers.ModelSerializer):
         if not value.name.endswith(('.mp4', '.mov', '.avi')):
             raise serializers.ValidationError("Nur Videodateien sind erlaubt.")
         return value
+    
+class VideoThumbnailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = ['thumbnail']
+
