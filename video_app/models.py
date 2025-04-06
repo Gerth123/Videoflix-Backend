@@ -54,7 +54,7 @@ class Video(models.Model):
 
     def generate_thumbnail(self):
         if not self.video_file or not self.id or self.thumbnail:
-            return  # Wenn bereits ein Thumbnail gesetzt ist, überspringen
+            return  
 
         output_filename = f"{self.id}.jpg"
         output_path = os.path.join(settings.MEDIA_ROOT, "thumbnails", output_filename)
@@ -67,7 +67,6 @@ class Video(models.Model):
                 .output(output_path, vframes=1, format="image2", vcodec="mjpeg")
                 .run(overwrite_output=True, capture_stdout=True, capture_stderr=True)
             )
-            # Verweise das Thumbnail direkt auf den Dateinamen (Pfad relativ zu MEDIA_ROOT)
             self.thumbnail.name = f"thumbnails/{output_filename}"
         except ffmpeg.Error as e:
             print(f"⚠️ ffmpeg stderr:\n{e.stderr.decode()}")
@@ -85,7 +84,6 @@ class Video(models.Model):
 
         super().save(*args, **kwargs)
 
-        # Generiere nur Thumbnail, wenn noch nicht vorhanden
         if not self.thumbnail and self.video_file:
             self.generate_thumbnail()
             super().save(update_fields=["thumbnail"])
