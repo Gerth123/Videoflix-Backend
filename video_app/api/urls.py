@@ -8,4 +8,5 @@ urlpatterns = [
     path('videos/<int:pk>/', VideoDetail.as_view(), name='video-detail'),
     path('videos/<int:pk>/thumbnail/', VideoThumbnail.as_view(), name='video-thumbnail'),
     path('genres/', GenreGroupedVideosView.as_view(), name='genres-grouped'),
+    path('big-thumbnail/', BigThumbnailView.as_view(), name='big-thumbnail'),
 ]

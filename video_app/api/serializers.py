@@ -40,3 +40,8 @@ class VideoThumbnailSerializer(serializers.ModelSerializer):
         model = Video
         fields = ['thumbnail', 'title']
 
+class VideoBigThumbnailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = ['thumbnail', 'title', 'description']
+

@@ -1,6 +1,6 @@
 from rest_framework import generics
 from video_app.models import Video
-from .serializers import VideoSerializer, VideoThumbnailSerializer
+from .serializers import VideoSerializer, VideoThumbnailSerializer, VideoBigThumbnailSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .permissions import IsAdminOrReadOnly
@@ -36,8 +36,6 @@ class VideoThumbnail(APIView):
     def get(self, request, pk, *args, **kwargs):
         try:
             video = Video.objects.get(pk=pk)
-
-            # Gebe nur das Thumbnail zurück, wenn es vorhanden ist
             if video.thumbnail:
                 return Response({
                     "thumbnail_url": video.thumbnail.url
@@ -68,3 +66,14 @@ class GenreGroupedVideosView(APIView):
             })
 
         return Response(result)
+
+class BigThumbnailView(APIView):
+    def get(self, request):
+        latest_video = Video.objects.order_by('-created_at').first() 
+
+        if latest_video:
+            serialized_video = VideoBigThumbnailSerializer(latest_video)
+            return Response(serialized_video.data)
+        else:
+            return Response({'message': 'No videos available'}, status=404)
+
