@@ -22,10 +22,8 @@ def get_unique_filename(target_dir, base_name, resolution, ext):
 
 GENRE_CHOICES = [
     ('action', 'Action'),
-    ('comedy', 'Comedy'),
     ('drama', 'Drama'),
     ('sci-fi', 'Sci-Fi'),
-    ('horror', 'Horror'),
     ('documentary', 'Documentary'),
 ]
 

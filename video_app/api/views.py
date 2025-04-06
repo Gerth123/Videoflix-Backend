@@ -52,8 +52,15 @@ class GenreGroupedVideosView(APIView):
         genres = Video.objects.values_list('genre', flat=True).distinct()
         result = []
 
+        latest_videos = Video.objects.order_by('-created_at')[:6]
+        serialized_latest = VideoThumbnailSerializer(latest_videos, many=True)
+        result.append({
+            'name': 'New on Videoflix',
+            'movies': [{'thumbnailUrl': vid['thumbnail']} for vid in serialized_latest.data]
+        })
+
         for genre in genres:
-            videos = Video.objects.filter(genre=genre)
+            videos = Video.objects.filter(genre=genre).order_by('-created_at')
             serialized = VideoThumbnailSerializer(videos, many=True)
             result.append({
                 'name': genre.title(),
