@@ -88,12 +88,8 @@ def process_and_save(instance_id, conversion_func, field_name):
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
     if created:
-
         queue = django_rq.get_queue('default', autocommit=True)
-
-        # Logging der Instanz-Id
         logger.info(f"Video {instance.id} wurde erstellt und wird in die Queue aufgenommen.")
-
         queue.enqueue(process_and_save, instance.id,
                       convert_144p, "video_144p", retry=Retry(max=3, interval=5))
         queue.enqueue(process_and_save, instance.id,

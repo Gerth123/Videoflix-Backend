@@ -29,7 +29,6 @@ GENRE_CHOICES = [
 
 
 class Video(models.Model):
-    # id = models.BigAutoField(primary_key=True)
     created_at = models.DateField(default=date.today)
     title = models.CharField(max_length=80)
     description = models.CharField(max_length=500)

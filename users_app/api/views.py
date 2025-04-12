@@ -31,8 +31,6 @@ from django.template.loader import render_to_string
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
-# Backend Modul 10 - Video 09 Redis Caching. Daten vorlade, bzw im Arbeitsspeicher belassen.
-
 
 @cache_page(CACHE_TTL)
 def index(request):

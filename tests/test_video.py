@@ -1,15 +1,10 @@
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'videoflix_backend_hub.settings'
-
-import django
-django.setup() 
-
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 from video_app.models import Video
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+
 
 class VideoAPITestCase(APITestCase):
 
