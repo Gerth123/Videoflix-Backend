@@ -54,7 +54,7 @@ class Video(models.Model):
 
     def generate_thumbnail(self):
         if not self.video_file or not self.id or self.thumbnail:
-            return  
+            return
 
         output_filename = f"{self.id}.jpg"
         output_path = os.path.join(settings.MEDIA_ROOT, "thumbnails", output_filename)
@@ -87,7 +87,6 @@ class Video(models.Model):
         if not self.thumbnail and self.video_file:
             self.generate_thumbnail()
             super().save(update_fields=["thumbnail"])
-
 
     def __str__(self):
         return f"{self.id} - {self.title}"

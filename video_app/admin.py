@@ -16,15 +16,13 @@ class VideoAdmin(ImportExportModelAdmin):
     def get_fields(self, request, obj=None):
         fields = [field.name for field in self.opts.model._meta.fields]
         if obj:
-            fields.append('id')  # Sicherstellen, dass das 'id'-Feld im Bearbeitungsmodus angezeigt wird
+            fields.append('id')
         else:
-            fields = ["title", "description", "video_file", "genre"]  # Im Erstellmodus nur diese Felder
+            fields = ["title", "description", "video_file", "genre"]
         return fields
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = ["video_144p", "video_240p", "video_360p", "video_480p", "video_720p", "video_1080p"]
         if obj:
-            readonly_fields.append('id')  
+            readonly_fields.append('id')
         return readonly_fields
-
-

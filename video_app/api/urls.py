@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import *
+from .views import VideoList, VideoDetail, VideoThumbnail, GenreGroupedVideosView, BigThumbnailView
 
 
-urlpatterns = [     
+urlpatterns = [
     path('', VideoList.as_view(), name='video-list'),
     path('videos/', VideoList.as_view(), name='video-list'),
     path('videos/<int:pk>/', VideoDetail.as_view(), name='video-detail'),

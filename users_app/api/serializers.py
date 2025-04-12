@@ -27,7 +27,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(serializers.Serializer):
-    # username = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
@@ -49,7 +48,6 @@ class RegistrationSerializer(serializers.Serializer):
         '''
         password = self.validated_data['password']
         user = User(
-            # username=self.validated_data['username'],
             email=self.validated_data['email']
         )
         user.set_password(password)
@@ -61,6 +59,7 @@ class RegistrationSerializer(serializers.Serializer):
         Create and return a new user profile.
         '''
         return UserProfile.objects.create(user=user)
+
 
 class EmailAuthTokenSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -86,9 +85,11 @@ class EmailAuthTokenSerializer(serializers.Serializer):
                 "E-Mail und Passwort sind erforderlich.")
         attrs['user'] = user
         return attrs
-    
+
+
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
     token = serializers.CharField()

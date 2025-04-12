@@ -1,12 +1,10 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save, post_delete, post_init
+from django.db.models.signals import post_save, post_delete
 from .models import Video
 import os
-from .tasks import *
+from .tasks import convert_144p, convert_240p, convert_360p, convert_480p, convert_720p, convert_1080p
 import django_rq
 from django.db import transaction
-from .models import Video
-from django.apps import apps
 from django.conf import settings
 import time
 from rq import Retry
@@ -15,6 +13,7 @@ from django.utils.text import slugify
 
 
 logger = logging.getLogger(__name__)
+
 
 def get_unique_filename(target_dir, base_name, resolution, ext):
     """Prüft, ob der Dateiname existiert, und hängt ggf. eine Nummer an."""
@@ -27,6 +26,7 @@ def get_unique_filename(target_dir, base_name, resolution, ext):
 
     return file_path
 
+
 def set_converted_video(video_id, convert_function, field_name, **kwargs):
     """Wird von RQ-Worker ausgeführt, speichert den konvertierten Videopfad."""
 
@@ -37,31 +37,6 @@ def set_converted_video(video_id, convert_function, field_name, **kwargs):
     with transaction.atomic():
         video.save()
 
-
-# def process_and_save(instance_id, conversion_func, field_name):
-#     """Konvertiert das Video und speichert den Pfad in der Datenbank."""
-#     try:
-#         instance = Video.objects.get(id=instance_id)
-#         instance.refresh_from_db()
-#         output_path = conversion_func(instance.video_file.path)
-
-#         if output_path:
-#             folder_name = field_name.split('_', 1)[1]
-#             target_dir = os.path.join(
-#                 settings.MEDIA_ROOT, 'videos', folder_name)
-#             os.makedirs(target_dir, exist_ok=True)
-#             file_name = os.path.basename(output_path)
-#             final_output_path = os.path.join(target_dir, file_name)
-#             relative_path = final_output_path.replace(settings.MEDIA_ROOT, '')
-#             url = relative_path.lstrip(os.sep)
-#             setattr(instance, field_name, url)
-#             instance.save(update_fields=[field_name])
-#             print(f"Gespeichert: {field_name} -> {url}")
-#         else:
-#             print(f"Fehlgeschlagen: {field_name}")
-
-#     except Video.DoesNotExist:
-#         print("Video-Instanz nicht gefunden.")
 
 def wait_for_video(instance_id, max_retries=5, delay=1):
     """Wartet, bis das Video in der Datenbank vorhanden ist."""
@@ -75,12 +50,13 @@ def wait_for_video(instance_id, max_retries=5, delay=1):
     logger.error(f"Video mit ID {instance_id} konnte nach {max_retries} Versuchen nicht gefunden werden.")
     return None
 
+
 def process_and_save(instance_id, conversion_func, field_name):
     """Konvertiert das Video und speichert den Pfad in der Datenbank."""
     try:
         instance = wait_for_video(instance_id)
         if not instance:
-            return 
+            return
 
         instance.refresh_from_db()
         output_path = conversion_func(instance.video_file.path)
@@ -109,16 +85,14 @@ def process_and_save(instance_id, conversion_func, field_name):
         logger.error(f"Fehler bei der Verarbeitung des Videos {instance_id}: {str(e)}")
 
 
-
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
     if created:
 
         queue = django_rq.get_queue('default', autocommit=True)
-        
+
         # Logging der Instanz-Id
         logger.info(f"Video {instance.id} wurde erstellt und wird in die Queue aufgenommen.")
-
 
         queue.enqueue(process_and_save, instance.id,
                       convert_144p, "video_144p", retry=Retry(max=3, interval=5))
@@ -136,8 +110,7 @@ def video_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=Video)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
-    """Löscht das Hauptvideo und alle konvertierten Versionen beim Löschen des Video-Objekts."""
-    
+
     def delete_file(file_field):
         if file_field and file_field.name:
             file_path = file_field.path
@@ -156,4 +129,3 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
     delete_file(instance.video_1080p)
 
     print("Alle zugehörigen Videodateien wurden gelöscht.")
-

@@ -13,6 +13,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='video',
             name='genre',
-            field=models.CharField(choices=[('action', 'Action'), ('comedy', 'Comedy'), ('drama', 'Drama'), ('sci-fi', 'Sci-Fi'), ('horror', 'Horror'), ('documentary', 'Documentary')], default='action', max_length=30),
+            field=models.CharField(choices=[
+                ('action', 'Action'), ('comedy', 'Comedy'),
+                ('drama', 'Drama'), ('sci-fi', 'Sci-Fi'),
+                ('horror', 'Horror'), ('documentary', 'Documentary')
+            ], default='action', max_length=30),
         ),
     ]

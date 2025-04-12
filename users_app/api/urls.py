@@ -4,7 +4,7 @@ from .views import UserProfileList, UserProfileDetail, \
     PasswordResetRequestView, PasswordResetConfirmView
 
 
-urlpatterns = [     
+urlpatterns = [
     path('', UserProfileList.as_view(), name='userprofile-list'),
     path('profiles/', UserProfileList.as_view(), name='userprofile-list'),
     path('profiles/<int:pk>/', UserProfileDetail.as_view(), name='userprofile-detail'),
