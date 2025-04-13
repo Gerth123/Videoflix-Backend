@@ -35,7 +35,7 @@ class RegistrationSerializer(serializers.Serializer):
 
     def save(self):
         '''
-        Create and return a new user account.
+        Create, save and return a new user account.
         '''
         user = self.create_user()
         self.create_user_profile(user)

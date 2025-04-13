@@ -21,6 +21,12 @@ class UserProfile(models.Model):
         return self.user.email
 
     def save(self, *args, **kwargs):
+        '''
+        Save the UserProfile instance. Also save the associated User instance
+        if its email has been changed to lowercase. If the slug is empty, set it
+        to the slugified version of the User's email address.
+        Create a Token for the user if it does not already exist.
+        '''
         if self.user.email:
             email_lower = self.user.email.lower()
             if self.user.email != email_lower:
