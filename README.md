@@ -12,10 +12,25 @@ Dies ist das Backend für die Videoflix-Plattform. Es stellt REST-APIs zur Verf�
 
 ## ⚙️ Installation & Entwicklung
 
-Funktioniert unter **Linux** und **Windows**. Unter Linux verwende die Datei `requirementslin.txt` zur Installation der Pakete.
+Funktioniert unter **Linux** und **Windows**.
+
+### 🔹 Windows (PowerShell)
+
+```powershell
+# Umgebung anlegen und aktivieren
+python -m venv env
+.\env\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+# Migration und Serverstart
+python manage.py migrate
+python manage.py runserver
+```
+
+### 🔸 Linux
 
 ```bash
-# Umgebung anlegen und aktivieren (Linux)
+# Umgebung anlegen und aktivieren
 python -m venv env_lin
 source env_lin/bin/activate
 pip install -r requirementslin.txt
@@ -96,3 +111,4 @@ ausgeliefert. Stelle sicher, dass `MEDIA_URL` und `MEDIA_ROOT` korrekt gesetzt s
 ## 📌 Hinweis
 
 Dieses Backend ist optimiert für die Zusammenarbeit mit dem Angular-Frontend. Für CORS oder Authentifizierung per Token kann zusätzlich `django-cors-headers` oder `SimpleJWT` genutzt werden.
+
