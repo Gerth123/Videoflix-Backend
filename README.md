@@ -108,7 +108,7 @@ ausgeliefert. Stelle sicher, dass `MEDIA_URL` und `MEDIA_ROOT` korrekt gesetzt s
 Sensible Daten wie E-Mail-Zugangsdaten oder das Datenbankpasswort sind **ausgelagert in eine separate Datei**:
 
 ```python
-from static.variables import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DB_PASSWORD
+from static.variables import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DB_PASSWORD, SECRET_KEY
 
 
 ## 🧪 Debug & Background
