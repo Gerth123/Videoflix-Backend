@@ -43,6 +43,16 @@ python manage.py runserver
 
 > Backend läuft lokal unter `http://127.0.0.1:8000`
 
+### 🎥 FFmpeg installieren
+
+Für die Erstellung von Thumbnails aus Videos muss FFmpeg installiert sein:
+
+#### Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install ffmpeg
+
 ## ⚡ Redis-Server starten (nur Linux)
 
 1. Virtuelle Umgebung aktivieren:
