@@ -26,6 +26,8 @@ pip install -r requirements.txt
 # Migration und Serverstart
 python manage.py migrate
 python manage.py runserver
+
+# Start rq-win
 python manage.py rqworker default --worker-class simpleworker.SimpleWorker
 ```
 
