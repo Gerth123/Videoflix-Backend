@@ -156,7 +156,6 @@ def process_and_save(instance_id, conversion_func, field_name):
         if not instance: return
         instance.refresh_from_db()
         output_path = conversion_func(instance.video_file.path)
-        print(output_path)
         if not output_path:
             logger.error(f"Fehlgeschlagen: {field_name}")
             return
@@ -201,16 +200,16 @@ def video_post_save(sender, instance, created, **kwargs):
         logger.info(f"Video {instance.id} wurde erstellt und wird in die Queue aufgenommen.")
         queue.enqueue(process_and_save, instance.id,
                       convert_144p, "video_144p", retry=Retry(max=3, interval=5))
-        # queue.enqueue(process_and_save, instance.id,
-        #               convert_240p, "video_240p", retry=Retry(max=3, interval=5))
-        # queue.enqueue(process_and_save, instance.id,
-        #               convert_360p, "video_360p", retry=Retry(max=3, interval=5))
-        # queue.enqueue(process_and_save, instance.id,
-        #               convert_480p, "video_480p", retry=Retry(max=3, interval=5))
-        # queue.enqueue(process_and_save, instance.id,
-        #               convert_720p, "video_720p", retry=Retry(max=3, interval=5))
-        # queue.enqueue(process_and_save, instance.id,
-        #               convert_1080p, "video_1080p", retry=Retry(max=3, interval=5))
+        queue.enqueue(process_and_save, instance.id,
+                      convert_240p, "video_240p", retry=Retry(max=3, interval=5))
+        queue.enqueue(process_and_save, instance.id,
+                      convert_360p, "video_360p", retry=Retry(max=3, interval=5))
+        queue.enqueue(process_and_save, instance.id,
+                      convert_480p, "video_480p", retry=Retry(max=3, interval=5))
+        queue.enqueue(process_and_save, instance.id,
+                      convert_720p, "video_720p", retry=Retry(max=3, interval=5))
+        queue.enqueue(process_and_save, instance.id,
+                      convert_1080p, "video_1080p", retry=Retry(max=3, interval=5))
 
 
 @receiver(post_delete, sender=Video)

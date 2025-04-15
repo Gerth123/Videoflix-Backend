@@ -77,7 +77,6 @@ def run_ffmpeg_conversion(source, size, target, folder):
     if run.returncode == 0:
         logger.info(f"Konvertierung erfolgreich: {target}")
         if os.name == 'nt':
-            print(target)
             return target.replace('C:/', '/').replace('originals', folder)
         elif os.name == 'posix':
             return target.replace('c:/', '/').replace('C:/', '/').replace('originals', folder)
