@@ -12,18 +12,18 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-from static.passwords import GMAIL_PASSWORD
+from static.variables import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DB_PASSWORD, SECRET_KEY, ALLOWED_HOSTS
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-SECRET_KEY = 'django-insecure-fyquy_r9b_pq-^dd7c(5c32**n@3dyj-h*nqn(#9hulh&#maz0'
+SECRET_KEY = SECRET_KEY
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
+ALLOWED_HOSTS = ALLOWED_HOSTS
 
 CACHE_TTL = 60 * 15
 
@@ -118,7 +118,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'videoflix_db',
         'USER': 'videoflix',
-        'PASSWORD': 'neues_passwort123',
+        'PASSWORD': DB_PASSWORD,
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -159,7 +159,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "robingerth21@gmail.com"
-EMAIL_HOST_PASSWORD =   GMAIL_PASSWORD
+EMAIL_HOST_USER = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
 
 

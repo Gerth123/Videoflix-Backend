@@ -41,7 +41,12 @@ def get_paths(source, resolution, folder):
     """
     file_name = os.path.splitext(os.path.basename(source))[0]
     target = f"{file_name}.{resolution}.mp4"
-    source_linux = source.replace('\\', '/').replace('C:', 'c')
+    source_unified = source.replace('\\', '/')
+    logger.info(f"Quellpfad: {source_unified}")
+    if os.name == 'nt':
+        source_linux = source_unified
+    elif os.name == 'posix':
+        source_linux = source_unified.replace('C:', 'c')
     target_dir = os.path.dirname(source_linux).replace('originals', folder)
     target_linux = os.path.join(target_dir, target)
     return source_linux, target_linux
@@ -59,13 +64,23 @@ def run_ffmpeg_conversion(source, size, target, folder):
     Returns:
         str or None: Path to the converted video file if successful, otherwise None.
     """
-    cmd = ['wsl.exe', 'ffmpeg', '-i', source, '-s', size, '-c:v', 'libx264', '-crf', '23',
-           '-c:a', 'aac', '-strict', '-2', '-ac', '2', '-ar', '44100', '-preset', 'medium', target]
+    if os.name == 'nt': 
+        cmd = ['ffmpeg', '-i', source, '-s', size, '-c:v', 'libx264', '-crf', '23',
+               '-c:a', 'aac', '-strict', '-2', '-ac', '2', '-ar', '44100', '-preset', 'medium', target]
+    elif os.name == 'posix': 
+        cmd = ['wsl.exe', 'ffmpeg', '-i', source, '-s', size, '-c:v', 'libx264', '-crf', '23',
+               '-c:a', 'aac', '-strict', '-2', '-ac', '2', '-ar', '44100', '-preset', 'medium', target]
+    else:
+        raise EnvironmentError("Unbekanntes Betriebssystem.")
     logger.info(f"FFmpeg Befehl: {' '.join(cmd)}")
     run = subprocess.run(cmd, capture_output=True, text=True)
     if run.returncode == 0:
         logger.info(f"Konvertierung erfolgreich: {target}")
-        return target.replace('c:/', '/').replace('C:/', '/').replace('originals', folder)
+        if os.name == 'nt':
+            print(target)
+            return target.replace('C:/', '/').replace('originals', folder)
+        elif os.name == 'posix':
+            return target.replace('c:/', '/').replace('C:/', '/').replace('originals', folder)
     logger.error(f"Fehler bei der Konvertierung: {run.stderr}")
     return None
 

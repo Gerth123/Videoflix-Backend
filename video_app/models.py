@@ -111,7 +111,7 @@ class Video(models.Model):
         if creating and self.video_file:
             safe_title = slugify(self.title)
             ext = os.path.splitext(self.video_file.name)[1]
-            target_dir = os.path.join(settings.MEDIA_ROOT, 'videos', 'originals')
+            target_dir = os.path.join(settings.MEDIA_ROOT)
             os.makedirs(target_dir, exist_ok=True)
             unique_filename = get_unique_filename(target_dir, safe_title, 'original', ext)
             self.video_file.name = os.path.relpath(unique_filename, settings.MEDIA_ROOT)

@@ -16,8 +16,13 @@ class SimpleWorker(Worker):
     death_penalty_class = BaseDeathPenalty
 
     def main_work_horse(self, *args, **kwargs):
+        """
+        The main loop of the worker.
+        """
         raise NotImplementedError("Test worker does not implement this method")
 
     def execute_job(self, *args, **kwargs):
-        """Execute job in same thread/process, do not fork()"""
+        """
+        Execute job in same thread/process, do not fork()
+        """
         return self.perform_job(*args, **kwargs)
