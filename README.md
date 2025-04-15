@@ -9,7 +9,7 @@ Dies ist das Backend für die Videoflix-Plattform. Es stellt REST-APIs zur Verf�
 - Django RQ (Background Tasks)
 - PostgreSQL
 - Django Debug Toolbar
-- **FFmpeg** (für Videobearbeitung / Thumbnails)
+- FFmpeg (für Videobearbeitung / Thumbnails)
 
 ## ⚙️ Installation & Entwicklung
 
