@@ -52,7 +52,7 @@ Für die Erstellung von Thumbnails aus Videos muss FFmpeg installiert sein:
 ```bash
 sudo apt update
 sudo apt install ffmpeg
-
+```
 ## ⚡ Redis-Server starten (nur Linux)
 
 1. Virtuelle Umgebung aktivieren:
