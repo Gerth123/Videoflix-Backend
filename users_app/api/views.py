@@ -312,15 +312,15 @@ class ActivateAccountView(APIView):
             user = User.objects.get(pk=uid)
             user_profile = UserProfile.objects.get(user=user)
         except (User.DoesNotExist, ValueError):
-            return redirect(f"{settings.FRONTEND_URL}/activation-failed/")
+            return redirect(f"{settings.FRONTEND_URL}/activation-failed")
         if default_token_generator.check_token(user, token):
             user.is_active = True
             user_profile.is_active = True
             user.save()
             user_profile.save()
-            return redirect(f"{settings.FRONTEND_URL}/account-confirmed/")
+            return redirect(f"{settings.FRONTEND_URL}/account-confirmed")
         else:
-            return redirect(f"{settings.FRONTEND_URL}/activation-failed/")
+            return redirect(f"{settings.FRONTEND_URL}/activation-failed")
 
 
 class PasswordResetRequestView(APIView):
