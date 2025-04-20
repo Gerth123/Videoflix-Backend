@@ -23,7 +23,8 @@ venv.bak/
 env_lin/
 
 #Static files
-static/
+static/variables.py
+static/staticfiles
 media/
 
 #Django	
