@@ -43,10 +43,11 @@ def get_paths(source, resolution, folder):
     target = f"{file_name}.{resolution}.mp4"
     source_unified = source.replace('\\', '/')
     logger.info(f"Quellpfad: {source_unified}")
-    if os.name == 'nt':
-        source_linux = source_unified
-    elif os.name == 'posix':
-        source_linux = source_unified.replace('C:', 'c')
+    # if os.name == 'nt':
+    #     source_linux = source_unified
+    # elif os.name == 'posix':
+    #     source_linux = source_unified.replace('C:', 'c')
+    source_linux = source_unified
     target_dir = os.path.dirname(source_linux).replace('originals', folder)
     target_linux = os.path.join(target_dir, target)
     return source_linux, target_linux
@@ -67,9 +68,12 @@ def run_ffmpeg_conversion(source, size, target, folder):
     if os.name == 'nt': 
         cmd = ['ffmpeg', '-i', source, '-s', size, '-c:v', 'libx264', '-crf', '23',
                '-c:a', 'aac', '-strict', '-2', '-ac', '2', '-ar', '44100', '-preset', 'medium', target]
-    elif os.name == 'posix': 
-        cmd = ['wsl.exe', 'ffmpeg', '-i', source, '-s', size, '-c:v', 'libx264', '-crf', '23',
-               '-c:a', 'aac', '-strict', '-2', '-ac', '2', '-ar', '44100', '-preset', 'medium', target]
+    # elif os.name == 'posix': 
+    #     cmd = ['wsl.exe', 'ffmpeg', '-i', source, '-s', size, '-c:v', 'libx264', '-crf', '23',
+    #            '-c:a', 'aac', '-strict', '-2', '-ac', '2', '-ar', '44100', '-preset', 'medium', target]
+    elif os.name == 'posix':
+        cmd = ['ffmpeg', '-i', source, '-s', size, '-c:v', 'libx264', '-crf', '23',
+            '-c:a', 'aac', '-strict', '-2', '-ac', '2', '-ar', '44100', '-preset', 'medium', target]
     else:
         raise EnvironmentError("Unbekanntes Betriebssystem.")
     logger.info(f"FFmpeg Befehl: {' '.join(cmd)}")
