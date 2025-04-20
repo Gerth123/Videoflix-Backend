@@ -168,7 +168,7 @@ class RegistrationView(APIView):
         """
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        return f"{settings.SITE_URL}/api{reverse('activate-account', kwargs={'uidb64': uid, 'token': token})}"
+        return f"{settings.SITE_URL}{reverse('activate-account', kwargs={'uidb64': uid, 'token': token})}"
 
 
 def get_unique_username(email):
